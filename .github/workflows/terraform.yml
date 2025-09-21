@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./az104/m4-virtual-networks
+        working-directory: ./src/terraform
 
     steps:
       - name: 'AzCLI: login'
