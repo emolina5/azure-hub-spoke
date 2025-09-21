@@ -1,0 +1,29 @@
+name: "🔥 Delete Landing & remote state storage account"
+on: [workflow_dispatch]
+
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  delete-landing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'AzCLI: login'
+        uses: azure/login@v2
+        with:
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: 'AzCLI: rg group & st delete'
+        uses: azure/cli@v2
+        env:
+          RESOURCE_GROUP_NAME: "rg-tfland-d-001"
+          STORAGE_ACCOUNT_NAME: "sttflandd001"
+          CONTAINER_NAME: "tflandd"
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az storage container delete --account-name $STORAGE_ACCOUNT_NAME --name $CONTAINER_NAME
+            az storage account delete --name $STORAGE_ACCOUNT_NAME --resource-group $RESOURCE_GROUP_NAME --yes
+            az group delete --name $RESOURCE_GROUP_NAME --yes
