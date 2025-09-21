@@ -1,0 +1,42 @@
+name: "🏗️ Terraform plan & apply"
+on: [workflow_dispatch]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
+  ARM_SUBSCRIPTION_ID: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+  ARM_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
+
+jobs:
+  terraform-plan:
+    name: 'terrafrom plan'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./az104/m4-virtual-networks
+
+    steps:
+      - name: 'AzCLI: login'
+        uses: azure/login@v2
+        with:
+          client-id: $ARM_CLIENT_ID
+          tenant-id: $ARM_TENANT_ID
+          subscription-id: $ARM_SUBSCRIPTION_ID
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: terraform init
+        run: terraform init
+
+      - name: terraform plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
