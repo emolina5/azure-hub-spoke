@@ -1,6 +1,5 @@
 #### HUB ####
 locals {
-
   hub_vnet         = "10.0.0.0/16"
   hub_subnets      = ["gateway", "firewall"]
   hub_subnets_addr = zipmap(local.hub_subnets, cidrsubnets(local.hub_vnet, 8, 8))
@@ -9,7 +8,6 @@ locals {
     compute  = { vnet = "10.1.0.0/16" }
     database = { vnet = "10.2.0.0/16" }
   }
-
 }
 
 resource "azurerm_resource_group" "hub" {
