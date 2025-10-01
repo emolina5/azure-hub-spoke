@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./src/terraform/hub
+        working-directory: ./terraform
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -25,7 +25,12 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: terraform init
-        run: terraform init
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=rg-tfland-d-01" \
+            -backend-config="storage_account_name=sttflandd01" \
+            -backend-config="container_name=tflandd" \
+            -backend-config="key=hub.terraform.tfstate"
 
       - name: terraform plan
         run: terraform plan
