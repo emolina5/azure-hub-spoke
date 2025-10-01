@@ -31,8 +31,6 @@ resource "azurerm_subnet" "spoke" {
   address_prefixes     = [cidrsubnet(each.value.vnet, 8, 1)]
 }
 
-# PEERING
-
 resource "azurerm_virtual_network_peering" "hub-to-spoke" {
   for_each = local.spokes
 
