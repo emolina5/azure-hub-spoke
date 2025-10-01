@@ -1,33 +1,33 @@
 #### HUB ####
 locals {
-  location = "North Europe"
-  map = zipmap(["gw", "fw"], cidrsubnets("10.0.0.0/16", 8, 8))
+
+  hub_vnet         = "10.0.0.0/16"
+  hub_subnets      = ["gateway", "firewall"]
+  hub_subnets_addr = zipmap(local.hub_subnets, cidrsubnets(local.hub_vnet, 8, 8))
+
   spokes = {
-    spoke1 = {
-      vnet = "10.1.0.0/16"
-    }
-    spoke2 = {
-      vnet = "10.2.0.0/16"
-    }
+    compute  = { vnet = "10.1.0.0/16" }
+    database = { vnet = "10.2.0.0/16" }
   }
 
 }
 
 resource "azurerm_resource_group" "hub" {
   name     = "rg-hub-${var.environment}-01"
-  location = local.location
+  location = var.location
 }
 
 resource "azurerm_virtual_network" "hub" {
   name                = "vnet-hub-${var.environment}-01"
   location            = azurerm_resource_group.hub.location
   resource_group_name = azurerm_resource_group.hub.name
-  address_space       = ["10.0.0.0/16"]
+  address_space       = [local.hub_vnet]
 
 }
 
 resource "azurerm_subnet" "hub" {
-  for_each             = local.map
+  for_each = local.hub_subnets_addr
+
   name                 = "snet-${each.key}-${var.environment}-01"
   resource_group_name  = azurerm_resource_group.hub.name
   virtual_network_name = azurerm_virtual_network.hub.name
@@ -40,13 +40,11 @@ resource "azurerm_resource_group" "spoke" {
   for_each = local.spokes
 
   name     = "rg-${each.key}-${var.environment}-01"
-  location = local.location
+  location = var.location
 }
 
-
-
 resource "azurerm_virtual_network" "spoke" {
-  for_each            = local.spokes
+  for_each = local.spokes
 
   name                = "vnet-${each.key}-${var.environment}-01"
   location            = azurerm_resource_group.spoke[each.key].location
@@ -56,7 +54,7 @@ resource "azurerm_virtual_network" "spoke" {
 }
 
 resource "azurerm_subnet" "spoke" {
-  for_each             = local.spokes
+  for_each = local.spokes
 
   name                 = "snet-default-${var.environment}-01"
   resource_group_name  = azurerm_resource_group.spoke[each.key].name
@@ -64,8 +62,10 @@ resource "azurerm_subnet" "spoke" {
   address_prefixes     = [cidrsubnet(each.value.vnet, 8, 1)]
 }
 
+# PEERING
+
 resource "azurerm_virtual_network_peering" "hub-to-spoke" {
-  for_each                     = local.spokes
+  for_each = local.spokes
 
   name                         = "hub-to-${each.key}"
   resource_group_name          = azurerm_resource_group.hub.name
@@ -76,7 +76,7 @@ resource "azurerm_virtual_network_peering" "hub-to-spoke" {
 }
 
 resource "azurerm_virtual_network_peering" "spoke-to-hub" {
-  for_each                     = local.spokes
+  for_each = local.spokes
 
   name                         = "${each.key}-to-hub"
   resource_group_name          = azurerm_resource_group.spoke[each.key].name
