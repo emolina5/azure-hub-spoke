@@ -1,4 +1,3 @@
-#### HUB ####
 locals {
   hub_vnet         = "10.0.0.0/16"
   hub_subnets      = ["gateway", "firewall","mgmt"]
