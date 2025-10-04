@@ -1,11 +1,3 @@
-locals {
-  hub_vnet    = "10.0.0.0/16"
-  hub_subnets = ["gateway", "firewall", "mgmt"]
-  hub_subnets_addr = zipmap(local.hub_subnets,
-    [for idx, subnets in local.hub_subnets : cidrsubnet(local.hub_vnet, 8, idx)]
-  )
-}
-
 resource "azurerm_resource_group" "hub" {
   name     = "rg-hub-${var.environment}"
   location = var.location

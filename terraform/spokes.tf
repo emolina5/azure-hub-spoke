@@ -1,10 +1,3 @@
-locals {
-  spokes = {
-    compute  = { vnet = "10.1.0.0/16" }
-    database = { vnet = "10.2.0.0/16" }
-  }
-}
-
 resource "azurerm_resource_group" "spoke" {
   for_each = local.spokes
 
