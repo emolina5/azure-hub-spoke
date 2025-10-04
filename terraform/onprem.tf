@@ -1,7 +1,9 @@
 locals {
-  onprem_vnet         = "192.168.0.0/16"
-  onprem_subnets      = ["gateway", "mgmt"]
-  onprem_subnets_addr = zipmap(local.onprem_subnets, cidrsubnets(local.onprem_vnet, 11, 11))
+  onprem_vnet    = "192.168.0.0/16"
+  onprem_subnets = ["gateway", "mgmt"]
+  onprem_subnets_addr = zipmap(local.hub_subnets,
+    [for i, s in local.hub_subnets : cidrsubnet(local.hub_vnet, 8, i)]
+  )
 }
 
 resource "azurerm_resource_group" "onprem" {
