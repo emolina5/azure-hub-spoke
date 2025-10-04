@@ -8,7 +8,7 @@ locals {
   onprem_vnet    = "192.168.0.0/16"
   onprem_subnets = ["gateway", "mgmt"]
   onprem_subnets_addr = zipmap(local.onprem_subnets,
-    [for i, s in local.onprem_subnets : cidrsubnet(local.onprem_vnet, 8, i)]
+    [for idx, subnets in local.onprem_subnets : cidrsubnet(local.onprem_vnet, 8, idx)]
   )
 
   spokes = {
