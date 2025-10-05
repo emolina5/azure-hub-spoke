@@ -19,3 +19,11 @@ resource "azurerm_subnet" "hub" {
   virtual_network_name = azurerm_virtual_network.hub.name
   address_prefixes     = [each.value]
 }
+
+resource "azurerm_storage_account" "hub" {
+  name                     = "stem5hub${var.environment}"
+  resource_group_name      = azurerm_resource_group.hub.name
+  location                 = azurerm_resource_group.hub.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}

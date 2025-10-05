@@ -45,3 +45,13 @@ resource "azurerm_virtual_network_peering" "spoke-to-hub" {
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
 }
+
+resource "azurerm_storage_account" "spoke" {
+  for_each = local.spokes
+
+  name                     = "stem5${each.key}${var.environment}"
+  resource_group_name      = azurerm_resource_group.spoke[each.key].name
+  location                 = azurerm_resource_group.spoke[each.key].location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
