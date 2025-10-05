@@ -55,3 +55,11 @@ resource "azurerm_storage_account" "spoke" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 }
+
+resource "azurerm_storage_container" "spoke" {
+  for_each = local.spokes
+
+  name                  = "terraform"
+  storage_account_id    = azurerm_storage_account.spoke[each.key].id
+  container_access_type = "private"
+}

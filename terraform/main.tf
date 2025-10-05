@@ -27,3 +27,9 @@ resource "azurerm_storage_account" "hub" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 }
+
+resource "azurerm_storage_container" "hub" {
+  name                  = "terraform"
+  storage_account_id    = azurerm_storage_account.hub.id
+  container_access_type = "private"
+}

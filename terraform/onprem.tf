@@ -44,3 +44,9 @@ resource "azurerm_storage_account" "onprem" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 }
+
+resource "azurerm_storage_container" "onprem" {
+  name                  = "terraform"
+  storage_account_id    = azurerm_storage_account.onprem.id
+  container_access_type = "private"
+}
