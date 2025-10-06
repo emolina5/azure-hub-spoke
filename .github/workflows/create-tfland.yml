@@ -18,9 +18,9 @@ jobs:
       - name: 'AzCLI: rg group & st create'
         uses: azure/cli@v2
         env:
-          RESOURCE_GROUP_NAME: "rg-tfland-d-01"
-          STORAGE_ACCOUNT_NAME: "sttflandd01"
-          CONTAINER_NAME: "tflandd"
+          RESOURCE_GROUP_NAME: "rg-tfland"
+          STORAGE_ACCOUNT_NAME: "stem5tfland"
+          CONTAINER_NAME: "tfland"
         with:
           azcliversion: latest
           inlineScript: |

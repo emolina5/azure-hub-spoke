@@ -1,4 +1,4 @@
-name: "🏗️ Hub: Terraform"
+name: "🏗️ Deploy Hub & Spoke infrastructure"
 on: [workflow_dispatch]
 
 permissions:
@@ -27,9 +27,9 @@ jobs:
       - name: terraform init
         run: |
           terraform init \
-            -backend-config="resource_group_name=rg-tfland-d-01" \
-            -backend-config="storage_account_name=sttflandd01" \
-            -backend-config="container_name=tflandd" \
+            -backend-config="resource_group_name=rg-tfland" \
+            -backend-config="storage_account_name=stem5tfland" \
+            -backend-config="container_name=tfland" \
             -backend-config="key=hub.terraform.tfstate"
 
       - name: terraform plan
