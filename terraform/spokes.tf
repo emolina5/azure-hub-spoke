@@ -46,24 +46,6 @@ resource "azurerm_virtual_network_peering" "spoke-to-hub" {
   allow_forwarded_traffic      = true
 }
 
-resource "azurerm_storage_account" "spoke" {
-  for_each = local.spokes
-
-  name                     = "stem5${each.key}${var.environment}"
-  resource_group_name      = azurerm_resource_group.spoke[each.key].name
-  location                 = azurerm_resource_group.spoke[each.key].location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
-
-resource "azurerm_storage_container" "spoke" {
-  for_each = local.spokes
-
-  name                  = "terraform"
-  storage_account_id    = azurerm_storage_account.spoke[each.key].id
-  container_access_type = "private"
-}
-
 resource "azurerm_route_table" "spoke" {
   for_each = local.spokes
 
@@ -84,4 +66,22 @@ resource "azurerm_subnet_route_table_association" "spoke" {
 
   subnet_id      = azurerm_subnet.spoke[each.key].id
   route_table_id = azurerm_route_table.spoke[each.key].id
+}
+
+resource "azurerm_storage_account" "spoke" {
+  for_each = local.spokes
+
+  name                     = "stem5${each.key}${var.environment}"
+  resource_group_name      = azurerm_resource_group.spoke[each.key].name
+  location                 = azurerm_resource_group.spoke[each.key].location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+resource "azurerm_storage_container" "spoke" {
+  for_each = local.spokes
+
+  name                  = "terraform"
+  storage_account_id    = azurerm_storage_account.spoke[each.key].id
+  container_access_type = "private"
 }
