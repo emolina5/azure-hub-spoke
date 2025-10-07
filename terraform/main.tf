@@ -33,25 +33,3 @@ resource "azurerm_storage_container" "hub" {
   storage_account_id    = azurerm_storage_account.hub.id
   container_access_type = "private"
 }
-
-resource "azurerm_public_ip" "hub" {
-  name                = "pip-hub-${var.environment}"
-  resource_group_name = azurerm_resource_group.hub.name
-  location            = azurerm_resource_group.hub.location
-  allocation_method   = "Static"
-  sku                 = "Standard"
-}
-
-resource "azurerm_firewall" "hub" {
-  name                = "afw-hub-${var.environment}"
-  resource_group_name = azurerm_resource_group.hub.name
-  location            = azurerm_resource_group.hub.location
-  sku_name            = "AZFW_Hub"
-  sku_tier            = "Basic"
-
-  ip_configuration {
-    name                 = "configuration"
-    subnet_id            = azurerm_subnet.hub["AzureFirewallSubnet"].id
-    public_ip_address_id = azurerm_public_ip.hub.id
-  }
-}
