@@ -63,3 +63,25 @@ resource "azurerm_storage_container" "spoke" {
   storage_account_id    = azurerm_storage_account.spoke[each.key].id
   container_access_type = "private"
 }
+
+resource "azurerm_route_table" "spoke" {
+  for_each = local.spokes
+
+  name                = "rt-${each.key}-${var.environment}"
+  resource_group_name = azurerm_resource_group.spoke[each.key].name
+  location            = azurerm_resource_group.spoke[each.key].location
+
+  route {
+    name                   = "route-to-hub"
+    address_prefix         = "0.0.0.0/0"
+    next_hop_type          = "VirtualAppliance"
+    next_hop_in_ip_address = azurerm_firewall.hub.ip_configuration[0].private_ip_address
+  }
+}
+
+resource "azurerm_subnet_route_table_association" "spoke" {
+  for_each = local.spokes
+
+  subnet_id      = azurerm_subnet.spoke[each.key].id
+  route_table_id = azurerm_route_table.spoke[each.key].id
+}
